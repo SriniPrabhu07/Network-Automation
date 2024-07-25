@@ -1,0 +1,26 @@
+---
+- name: Running show commands on Cisco IOS
+  hosts: routers
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+    - name: BGP config
+      ios_config: #ansible module
+        save_when: modified
+        lines: #commands to run
+          - show version
+          - show ip interface brief
+          - bgp log-neighbor-changes
+          - network 192.168.66.0
+          - neighbor "{{item}}" remote-as 65535
+         parent: router bgp 65535
+         items:
+          - 192.168.66.16
+          - 192.168.66.16
+      
+      register: output    #register the output in a variable named output
+
+    - debug: var=output.stdout_lines   #print the variable at the console line by line
+
+...
